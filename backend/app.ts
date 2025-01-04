@@ -18,7 +18,7 @@ app.use('/api/item', itemRoute);
 // Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
-  res.status(500).send('Something broke!');
+  res.status(500).send(`${err.message}`);
 });
 
 // Start server

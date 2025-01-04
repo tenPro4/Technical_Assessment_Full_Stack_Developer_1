@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.ts",
   "scripts": {
-    "dev": "nodemon --exec ts-node app.ts",
+    "dev": "dotenv -e .env.dev -- nodemon --exec ts-node app.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "seed": "ts-node seed.ts",
     "prisma:generate": "prisma generate"
