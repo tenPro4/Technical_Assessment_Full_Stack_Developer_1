@@ -37,12 +37,9 @@ async function main() {
   await prisma.item.deleteMany();
   
   // Insert seed data
-  for (const item of items) {
-    const createdItem = await prisma.item.create({
-      data: item,
-    });
-    console.log(`Created item with ID: ${createdItem.id}`);
-  }
+  await prisma.item.createMany({
+    data: items,
+  });
   
   console.log('Seeding finished.');
 }
