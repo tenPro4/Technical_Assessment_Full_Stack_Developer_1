@@ -1,14 +1,42 @@
-export const getAllItems = async () => {
-  return [
-    {
-      id: 1,
-      name: 'Item 1',
-      price: 100,
-    },
-    {
-      id: 2,
-      name: 'Item 2',
-      price: 200,
-    },
-  ];
+import prisma from '../lib/db';
+
+export interface CreateItemDto {
+  name: string;
+  description?: string;
+  price: number;
 }
+
+export interface UpdateItemDto {
+  name?: string;
+  description?: string;
+  price?: number;
+}
+
+export const createItem = async (data: CreateItemDto) => {
+  return prisma.item.create({
+    data: data,
+  });
+};
+
+export const getAllItems = async () => {
+  return prisma.item.findMany();
+};
+
+export const getItemById = async (id: number) => {
+  return prisma.item.findUnique({
+    where: { id },
+  });
+};
+
+export const updateItem = async (id: number, data: UpdateItemDto) => {
+  return prisma.item.update({
+    where: { id },
+    data: data,
+  });
+};
+
+export const deleteItem = async (id: number) => {
+  return prisma.item.delete({
+    where: { id },
+  });
+};

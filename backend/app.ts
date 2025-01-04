@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import itemRoute from "./routes/item.route";
 
 const app: Express = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3007;
 
 // Middleware
 app.use(helmet());
