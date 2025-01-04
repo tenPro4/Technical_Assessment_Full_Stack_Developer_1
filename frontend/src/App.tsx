@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Table, Button, Modal, Form, Input, InputNumber, message } from 'antd';
-import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { AppDispatch, RootState } from './store';
 import { fetchItems, createItem, updateItem, deleteItem, deleteMany } from './store/itemsSlice';
 import { CreateItemDto, Item, UpdateItemDto } from './types';
+import type { TableProps } from 'antd';
+import { SorterResult } from 'antd/es/table/interface';
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
@@ -13,6 +15,8 @@ function App() {
   const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [form] = Form.useForm();
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [sortedInfo, setSortedInfo] = useState<SorterResult<Item>>({});
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     dispatch(fetchItems());
@@ -79,6 +83,10 @@ function App() {
     });
   };
 
+  const handleChange: TableProps<Item>['onChange'] = (pagination, filters, sorter) => {
+    setSortedInfo(sorter as SorterResult<Item>);
+  };
+
   const rowSelection = {
     selectedRowKeys,
     onChange: (newSelectedRowKeys: React.Key[]) => {
@@ -86,11 +94,24 @@ function App() {
     },
   };
 
+  const getFilteredItems = () => {
+    if (!searchText) return items;
+    
+    const searchLower = searchText.toLowerCase();
+    return items.filter((item) => 
+      item.name.toLowerCase().includes(searchLower) ||
+      item.description?.toLowerCase().includes(searchLower) ||
+      item.price.toString().includes(searchLower)
+    );
+  };
+
   const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
+      sorter: (a: Item, b: Item) => a.name.localeCompare(b.name),
+      sortOrder: sortedInfo.columnKey === 'name' ? sortedInfo.order : null,
     },
     {
       title: 'Description',
@@ -101,6 +122,8 @@ function App() {
       title: 'Price',
       dataIndex: 'price',
       key: 'price',
+      sorter: (a: Item, b: Item) => a.price - b.price,
+      sortOrder: sortedInfo.columnKey === 'price' ? sortedInfo.order : null,
     },
     {
       title: 'Actions',
@@ -153,13 +176,25 @@ function App() {
         </div>
       </div>
 
+      <div className="mb-4 flex justify-end">
+        <Input
+          placeholder="Search items by name, description, or price..."
+          prefix={<SearchOutlined className="text-gray-400" />}
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          allowClear
+          className="max-w-md"
+        />
+      </div>
+
       <Table
         rowSelection={rowSelection}
         columns={columns}
-        dataSource={items}
+        dataSource={getFilteredItems()}
         loading={loading}
         rowKey="id"
         className="shadow-lg"
+        onChange={handleChange}
       />
 
       <Modal
