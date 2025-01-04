@@ -7,6 +7,7 @@ import {
   getItemById,
   updateItem,
   deleteItem,
+  deleteMany,
 } from "../services/item.service";
 import { CreateItemRequest, UpdateItemRequest, GetItemByIdRequest } from "../lib/schemas";
 
@@ -77,6 +78,20 @@ export const deleteItemController = async (
   try {
     const id = parseInt(req.params.id);
     await deleteItem(id);
+    res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteManyController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { ids } = req.body;
+    await deleteMany(ids);
     res.status(204).send();
   } catch (err) {
     next(err);

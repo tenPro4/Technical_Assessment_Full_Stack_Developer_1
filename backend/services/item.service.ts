@@ -40,3 +40,13 @@ export const deleteItem = async (id: number) => {
     where: { id },
   });
 };
+
+export const deleteMany = async (ids: number[]) => {
+  return prisma.item.deleteMany({
+    where: {
+      id: {
+        in: ids,
+      },
+    },
+  });
+};

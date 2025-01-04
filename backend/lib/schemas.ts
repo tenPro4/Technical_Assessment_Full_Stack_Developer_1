@@ -25,6 +25,12 @@ export const getItemByIdSchema = z.object({
   }),
 });
 
+export const deleteManySchema = z.object({
+  body: z.object({
+    ids: z.array(z.number()),
+  }),
+});
+
 // Type definitions for validated request objects
 export type CreateItemRequest = z.infer<typeof createItemSchema>;
 export type UpdateItemRequest = z.infer<typeof updateItemSchema>;
