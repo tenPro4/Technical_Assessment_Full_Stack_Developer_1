@@ -89,4 +89,4 @@ export const {
   selectIds: selectItemIds,
 } = itemsAdapter.getSelectors<RootState>((state) => state.items);
 
-export default itemsSlice.reducer; 
+export default itemsSlice.reducer;

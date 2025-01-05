@@ -1,3 +1,7 @@
+# Setup
+
+The details of the setup are in the README.md file in the backend and frontend directories.
+
 # Interview Task: Full Stack Application Development
 ## Objective
 Your task is to create a full-stack application for managing "items." The project consists of a backend API built with Express.js and TypeScript and a frontend application using React.js with Redux Toolkit.
