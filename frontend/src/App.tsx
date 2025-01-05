@@ -3,14 +3,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Table, Button, Modal, Form, Input, InputNumber, message } from 'antd';
 import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import { AppDispatch, RootState } from './store';
-import { fetchItems, createItem, updateItem, deleteItem, deleteMany } from './store/itemsSlice';
+import { fetchItems, createItem, updateItem, deleteItem, deleteMany, selectAllItems } from './store/itemsSlice';
 import { CreateItemDto, Item, UpdateItemDto } from './types';
 import type { TableProps } from 'antd';
 import { SorterResult } from 'antd/es/table/interface';
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
-  const { items, loading } = useSelector((state: RootState) => state.items);
+  const items = useSelector(selectAllItems);
+  const loading = useSelector((state: RootState) => state.items.loading);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [form] = Form.useForm();

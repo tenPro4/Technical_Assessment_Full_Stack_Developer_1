@@ -1,18 +1,21 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, createEntityAdapter } from '@reduxjs/toolkit';
 import { itemsApi } from '../services/api';
 import { Item, CreateItemDto, UpdateItemDto } from '../types';
+import { RootState } from './index';
+
+export const itemsAdapter = createEntityAdapter<Item>({
+  sortComparer: (a, b) => a.name.localeCompare(b.name),
+});
 
 interface ItemsState {
-  items: Item[];
   loading: boolean;
   error: string | null;
 }
 
-const initialState: ItemsState = {
-  items: [],
+const initialState = itemsAdapter.getInitialState<ItemsState>({
   loading: false,
   error: null,
-};
+});
 
 export const fetchItems = createAsyncThunk('items/fetchAll', async () => {
   return await itemsApi.getAll();
@@ -59,28 +62,31 @@ const itemsSlice = createSlice({
       })
       .addCase(fetchItems.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload;
+        itemsAdapter.setAll(state, action.payload);
       })
       .addCase(fetchItems.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch items';
       })
       .addCase(createItem.fulfilled, (state, action) => {
-        state.items.push(action.payload);
+        itemsAdapter.addOne(state, action.payload);
       })
       .addCase(updateItem.fulfilled, (state, action) => {
-        const index = state.items.findIndex((item) => item.id === action.payload.id);
-        if (index !== -1) {
-          state.items[index] = action.payload;
-        }
+        itemsAdapter.upsertOne(state, action.payload);
       })
       .addCase(deleteItem.fulfilled, (state, action) => {
-        state.items = state.items.filter((item) => item.id !== action.payload);
+        itemsAdapter.removeOne(state, action.payload);
       })
       .addCase(deleteMany.fulfilled, (state, action) => {
-        state.items = state.items.filter((item) => !action.payload.includes(item.id));
+        itemsAdapter.removeMany(state, action.payload);
       });
   },
 });
+
+export const {
+  selectAll: selectAllItems,
+  selectById: selectItemById,
+  selectIds: selectItemIds,
+} = itemsAdapter.getSelectors<RootState>((state) => state.items);
 
 export default itemsSlice.reducer; 
